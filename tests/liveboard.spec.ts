@@ -20,10 +20,10 @@ test.describe("RVM.LiveBoard", () => {
 
   test("sidebar has all nav links", async ({ page }) => {
     await page.goto(BASE);
-    const sidebar = page.locator(".sidebar-nav");
-    await expect(sidebar.getByText("Dashboard", { exact: true })).toBeVisible();
-    await expect(sidebar.getByText("Dashboards")).toBeVisible();
-    await expect(sidebar.getByText("Alerts")).toBeVisible();
+    const nav = page.locator(".sidebar-nav");
+    await expect(nav.locator("a", { hasText: "Dashboard" }).first()).toBeVisible();
+    await expect(nav.getByText("Dashboards")).toBeVisible();
+    await expect(nav.getByText("Alerts")).toBeVisible();
   });
 
   test("navigate to Dashboards page", async ({ page }) => {

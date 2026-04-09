@@ -31,14 +31,14 @@ test.describe("RVM.HealthGuard", () => {
     await page.goto(BASE);
     await page.locator(".sidebar-nav").getByText("Services").click();
     await expect(page).toHaveURL(/\/services/);
-    await expect(page.locator("h2")).toContainText("Services");
+    await expect(page.locator(".page-body h2")).toContainText("Services");
   });
 
   test("navigate to Incidents page", async ({ page }) => {
     await page.goto(BASE);
     await page.locator(".sidebar-nav").getByText("Incidents").click();
     await expect(page).toHaveURL(/\/incidents/);
-    await expect(page.locator("h2").first()).toContainText("Incidents");
+    await expect(page.locator(".page-body h2")).toContainText("Incidents");
   });
 
   test("health endpoint returns 200", async ({ request }) => {
