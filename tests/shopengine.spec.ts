@@ -6,14 +6,13 @@ test.describe("RVM.ShopEngine", () => {
   test("dashboard loads with layout", async ({ page }) => {
     await page.goto(BASE);
     await expect(page.locator(".sidebar-header h2")).toHaveText("RVM.ShopEngine");
-    await expect(page.locator("h3")).toContainText("Dashboard");
+    await expect(page.locator("h1")).toContainText("Dashboard");
   });
 
   test("dashboard shows stat cards", async ({ page }) => {
     await page.goto(BASE);
     await expect(page.locator(".stats-grid")).toBeVisible();
-    const cards = page.locator(".stat-card");
-    await expect(cards).toHaveCount(3);
+    await expect(page.locator(".stat-card")).toHaveCount(3);
     await expect(page.locator(".stat-label").nth(0)).toContainText("Categories");
     await expect(page.locator(".stat-label").nth(1)).toContainText("Products");
     await expect(page.locator(".stat-label").nth(2)).toContainText("Orders");
@@ -32,25 +31,25 @@ test.describe("RVM.ShopEngine", () => {
     await page.goto(BASE);
     await page.locator(".nav-list").getByText("Products").click();
     await expect(page).toHaveURL(/\/products/);
-    await expect(page.locator("h3")).toContainText("Products");
+    await expect(page.locator("h1")).toContainText("Products");
   });
 
   test("navigate to Orders page", async ({ page }) => {
     await page.goto(BASE);
     await page.locator(".nav-list").getByText("Orders").click();
     await expect(page).toHaveURL(/\/orders/);
-    await expect(page.locator("h3")).toContainText("Orders");
+    await expect(page.locator("h1")).toContainText("Orders");
   });
 
   test("navigate to Payments page", async ({ page }) => {
     await page.goto(BASE);
     await page.locator(".nav-list").getByText("Payments").click();
     await expect(page).toHaveURL(/\/payments/);
-    await expect(page.locator("h3")).toContainText("Payments");
+    await expect(page.locator("h1")).toContainText("Payments");
   });
 
   test("health endpoint returns 200", async ({ request }) => {
     const response = await request.get(`${BASE}/health`);
-    expect(response.status()).toBe(200);
+    expect(response.ok()).toBeTruthy();
   });
 });

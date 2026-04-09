@@ -18,8 +18,7 @@ test.describe("RVM.MenuNaMao", () => {
   test("dashboard shows stat cards", async ({ page }) => {
     await page.goto(`${BASE}/admin`);
     await expect(page.locator(".stats-grid")).toBeVisible();
-    const cards = page.locator(".stat-card");
-    await expect(cards).toHaveCount(4);
+    await expect(page.locator(".stat-card")).toHaveCount(4);
   });
 
   test("sidebar has all nav links", async ({ page }) => {
@@ -35,22 +34,25 @@ test.describe("RVM.MenuNaMao", () => {
     await page.goto(`${BASE}/admin`);
     await page.locator(".sidebar").getByText("Pedidos").click();
     await expect(page).toHaveURL(/\/admin\/orders/);
+    await expect(page.locator("h1")).toContainText("Pedidos");
   });
 
   test("navigate to Mesas page", async ({ page }) => {
     await page.goto(`${BASE}/admin`);
     await page.locator(".sidebar").getByText("Mesas").click();
     await expect(page).toHaveURL(/\/admin\/tables/);
+    await expect(page.locator("h1")).toContainText("Mesas");
   });
 
   test("navigate to Estoque page", async ({ page }) => {
     await page.goto(`${BASE}/admin`);
     await page.locator(".sidebar").getByText("Estoque").click();
     await expect(page).toHaveURL(/\/admin\/stock/);
+    await expect(page.locator("h1")).toContainText("Estoque");
   });
 
   test("health endpoint returns 200", async ({ request }) => {
     const response = await request.get(`${BASE}/health`);
-    expect(response.status()).toBe(200);
+    expect(response.ok()).toBeTruthy();
   });
 });

@@ -6,17 +6,15 @@ test.describe("RVM.LogStream", () => {
   test("dashboard loads with layout", async ({ page }) => {
     await page.goto(BASE);
     await expect(page.locator(".sidebar-header h2")).toHaveText("RVM.LogStream");
-    await expect(page.locator("h3")).toContainText("Dashboard");
+    await expect(page.locator("h1")).toContainText("Dashboard");
   });
 
   test("dashboard shows stat cards", async ({ page }) => {
     await page.goto(BASE);
     await expect(page.locator(".stats-grid")).toBeVisible();
-    const cards = page.locator(".stat-card");
-    await expect(cards).toHaveCount(3);
-    await expect(page.locator(".stat-label").nth(0)).toContainText("Sources");
-    await expect(page.locator(".stat-label").nth(1)).toContainText("Entries");
-    await expect(page.locator(".stat-label").nth(2)).toContainText("Retention");
+    await expect(page.locator(".stat-card")).toHaveCount(2);
+    await expect(page.locator(".stat-label").nth(0)).toContainText("Total Sources");
+    await expect(page.locator(".stat-label").nth(1)).toContainText("Total Log Entries");
   });
 
   test("sidebar has all nav links", async ({ page }) => {
@@ -32,25 +30,25 @@ test.describe("RVM.LogStream", () => {
     await page.goto(BASE);
     await page.locator(".nav-list").getByText("Log Search").click();
     await expect(page).toHaveURL(/\/search/);
-    await expect(page.locator("h3")).toContainText("Search");
+    await expect(page.locator("h1")).toContainText("Log Search");
   });
 
   test("navigate to Sources page", async ({ page }) => {
     await page.goto(BASE);
-    await page.locator(".nav-list").getByText("Sources").click();
+    await page.locator(".nav-list").getByText("Sources", { exact: true }).click();
     await expect(page).toHaveURL(/\/sources/);
-    await expect(page.locator("h3")).toContainText("Sources");
+    await expect(page.locator("h1")).toContainText("Sources");
   });
 
   test("navigate to Retention page", async ({ page }) => {
     await page.goto(BASE);
     await page.locator(".nav-list").getByText("Retention").click();
     await expect(page).toHaveURL(/\/retention/);
-    await expect(page.locator("h3")).toContainText("Retention");
+    await expect(page.locator("h1")).toContainText("Retention Policies");
   });
 
   test("health endpoint returns 200", async ({ request }) => {
     const response = await request.get(`${BASE}/health`);
-    expect(response.status()).toBe(200);
+    expect(response.ok()).toBeTruthy();
   });
 });

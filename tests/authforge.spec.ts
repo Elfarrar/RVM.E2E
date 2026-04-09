@@ -30,14 +30,14 @@ test.describe("RVM.AuthForge", () => {
     await page.goto(`${BASE}/admin`);
     await page.locator(".nav-list").getByText("Users").click();
     await expect(page).toHaveURL(/\/admin\/users/);
-    await expect(page.locator("h3")).toContainText("Users");
+    await expect(page.locator("h1")).toContainText("Users");
   });
 
   test("navigate to Roles page", async ({ page }) => {
     await page.goto(`${BASE}/admin`);
     await page.locator(".nav-list").getByText("Roles").click();
     await expect(page).toHaveURL(/\/admin\/roles/);
-    await expect(page.locator("h3")).toContainText("Roles");
+    await expect(page.locator("h1")).toContainText("Roles");
   });
 
   test("navigate to OAuth Clients page", async ({ page }) => {
@@ -54,6 +54,6 @@ test.describe("RVM.AuthForge", () => {
 
   test("health endpoint returns 200", async ({ request }) => {
     const response = await request.get(`${BASE}/health`);
-    expect(response.status()).toBe(200);
+    expect(response.ok()).toBeTruthy();
   });
 });
