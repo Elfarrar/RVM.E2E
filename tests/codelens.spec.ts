@@ -2,6 +2,15 @@ import { test, expect } from "@playwright/test";
 
 const BASE = "https://codelens.rvmtech.com.br";
 
+/** Wait for Blazor Server to connect (interactive mode ready). */
+async function waitForBlazor(page: import("@playwright/test").Page) {
+  await page.waitForLoadState("networkidle");
+  await page.waitForFunction(
+    () => document.querySelector("[data-server-rendered]") === null,
+    { timeout: 10_000 }
+  ).catch(() => {});
+}
+
 test.describe("RVM.CodeLens", () => {
   test("home page loads", async ({ page }) => {
     await page.goto(BASE);
@@ -38,6 +47,7 @@ test.describe("RVM.CodeLens", () => {
     page,
   }) => {
     await page.goto(BASE);
+    await waitForBlazor(page);
     // Click Git Repository toggle
     await page.locator(".toggle-btn", { hasText: "Git Repository" }).click();
 
@@ -61,18 +71,21 @@ test.describe("RVM.CodeLens", () => {
 
   test("navigate to Dashboard page", async ({ page }) => {
     await page.goto(BASE);
+    await waitForBlazor(page);
     await page.locator(".sidebar").getByText("Dashboard").click();
     await expect(page).toHaveURL(/\/dashboard/);
   });
 
   test("navigate to Metrics page", async ({ page }) => {
     await page.goto(BASE);
+    await waitForBlazor(page);
     await page.locator(".sidebar").getByText("Metrics").click();
     await expect(page).toHaveURL(/\/metrics/);
   });
 
   test("navigate to Architecture page", async ({ page }) => {
     await page.goto(BASE);
+    await waitForBlazor(page);
     await page.locator(".sidebar").getByText("Architecture").click();
     await expect(page).toHaveURL(/\/architecture/);
   });

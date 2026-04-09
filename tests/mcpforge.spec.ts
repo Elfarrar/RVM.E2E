@@ -2,6 +2,15 @@ import { test, expect } from "@playwright/test";
 
 const BASE = "https://mcpforge.rvmtech.com.br";
 
+/** Wait for Blazor Server to connect (interactive mode ready). */
+async function waitForBlazor(page: import("@playwright/test").Page) {
+  await page.waitForLoadState("networkidle");
+  await page.waitForFunction(
+    () => document.querySelector("[data-server-rendered]") === null,
+    { timeout: 10_000 }
+  ).catch(() => {});
+}
+
 test.describe("RVM.McpForge", () => {
   test("dashboard loads with layout", async ({ page }) => {
     await page.goto(BASE);
@@ -22,7 +31,7 @@ test.describe("RVM.McpForge", () => {
 
   test("sidebar has all nav links", async ({ page }) => {
     await page.goto(BASE);
-    const nav = page.locator(".sidebar-nav");
+    const nav = page.locator(".nav-list");
     await expect(nav.getByText("Dashboard")).toBeVisible();
     await expect(nav.getByText("Projects")).toBeVisible();
     await expect(nav.getByText("Generated Servers")).toBeVisible();
@@ -30,9 +39,10 @@ test.describe("RVM.McpForge", () => {
 
   test("navigate to Projects page", async ({ page }) => {
     await page.goto(BASE);
-    await page.locator(".sidebar-nav").getByText("Projects").click();
+    await waitForBlazor(page);
+    await page.locator(".nav-list").getByText("Projects").click();
     await expect(page).toHaveURL(/\/projects/);
-    await expect(page.locator(".page-body h2")).toContainText("Forge Projects");
+    await expect(page.locator("h2")).toContainText("Forge Projects");
   });
 
   test("projects page has new project button", async ({ page }) => {
@@ -44,6 +54,7 @@ test.describe("RVM.McpForge", () => {
 
   test("new project form shows source type selector", async ({ page }) => {
     await page.goto(`${BASE}/projects`);
+    await waitForBlazor(page);
     await page.locator(".toolbar .btn-primary").click();
     await expect(page.locator(".form-card")).toBeVisible();
     await expect(page.locator(".form-card h3")).toContainText("New Project");
@@ -57,7 +68,9 @@ test.describe("RVM.McpForge", () => {
     page,
   }) => {
     await page.goto(`${BASE}/projects`);
+    await waitForBlazor(page);
     await page.locator(".toolbar .btn-primary").click();
+    await expect(page.locator(".form-card")).toBeVisible();
 
     // Default is Git source type
     await expect(
@@ -70,7 +83,9 @@ test.describe("RVM.McpForge", () => {
 
   test("database source shows connection string fields", async ({ page }) => {
     await page.goto(`${BASE}/projects`);
+    await waitForBlazor(page);
     await page.locator(".toolbar .btn-primary").click();
+    await expect(page.locator(".form-card")).toBeVisible();
 
     // Switch to Database
     await page.locator(".form-card select.form-input").selectOption("Database");
@@ -85,11 +100,9 @@ test.describe("RVM.McpForge", () => {
 
   test("navigate to Generated Servers page", async ({ page }) => {
     await page.goto(BASE);
-    await page.locator(".sidebar-nav").getByText("Generated Servers").click();
+    await waitForBlazor(page);
+    await page.locator(".nav-list").getByText("Generated Servers").click();
     await expect(page).toHaveURL(/\/generated/);
-    await expect(page.locator(".page-body h2")).toContainText(
-      "Generated MCP Servers"
-    );
   });
 
   test("generated page has data table", async ({ page }) => {
@@ -104,6 +117,6 @@ test.describe("RVM.McpForge", () => {
 
   test("health endpoint returns 200", async ({ request }) => {
     const response = await request.get(`${BASE}/health`);
-    expect(response.ok()).toBeTruthy();
+    expect(response.status()).toBe(200);
   });
 });

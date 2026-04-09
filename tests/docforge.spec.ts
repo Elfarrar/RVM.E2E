@@ -2,6 +2,15 @@ import { test, expect } from "@playwright/test";
 
 const BASE = "https://docforge.rvmtech.com.br";
 
+/** Wait for Blazor Server to connect (interactive mode ready). */
+async function waitForBlazor(page: import("@playwright/test").Page) {
+  await page.waitForLoadState("networkidle");
+  await page.waitForFunction(
+    () => document.querySelector("[data-server-rendered]") === null,
+    { timeout: 10_000 }
+  ).catch(() => {});
+}
+
 test.describe("RVM.DocForge", () => {
   test("dashboard loads with layout", async ({ page }) => {
     await page.goto(BASE);
@@ -35,6 +44,7 @@ test.describe("RVM.DocForge", () => {
 
   test("navigate to Projects page", async ({ page }) => {
     await page.goto(BASE);
+    await waitForBlazor(page);
     await page.locator(".nav-list").getByText("Projects").click();
     await expect(page).toHaveURL(/\/projects/);
     await expect(page.locator("h1")).toContainText("Projects");
@@ -49,12 +59,13 @@ test.describe("RVM.DocForge", () => {
 
   test("new project form shows source toggle", async ({ page }) => {
     await page.goto(`${BASE}/projects`);
+    await waitForBlazor(page);
     await page.locator(".toolbar .btn-primary").click();
 
     await expect(page.locator(".form-card")).toBeVisible();
     await expect(page.locator(".form-card h3")).toContainText("New Project");
 
-    const toggle = page.locator(".source-toggle");
+    const toggle = page.locator(".form-card .source-toggle");
     await expect(toggle).toBeVisible();
     await expect(toggle.locator(".toggle-btn").nth(0)).toContainText(
       "Local Path"
@@ -66,18 +77,23 @@ test.describe("RVM.DocForge", () => {
 
   test("git repository mode shows URL input", async ({ page }) => {
     await page.goto(`${BASE}/projects`);
+    await waitForBlazor(page);
     await page.locator(".toolbar .btn-primary").click();
+    await expect(page.locator(".form-card")).toBeVisible();
 
     // Click Git Repository toggle
-    await page.locator(".toggle-btn", { hasText: "Git Repository" }).click();
+    await page
+      .locator(".form-card .toggle-btn", { hasText: "Git Repository" })
+      .click();
 
     await expect(
-      page.locator('input[placeholder*="github.com"]')
+      page.locator('.form-input[placeholder*="github.com"]')
     ).toBeVisible();
   });
 
   test("navigate to Documents page", async ({ page }) => {
     await page.goto(BASE);
+    await waitForBlazor(page);
     await page.locator(".nav-list").getByText("Documents").click();
     await expect(page).toHaveURL(/\/documents/);
     await expect(page.locator("h1")).toContainText("Documents");
@@ -85,6 +101,6 @@ test.describe("RVM.DocForge", () => {
 
   test("health endpoint returns 200", async ({ request }) => {
     const response = await request.get(`${BASE}/health`);
-    expect(response.ok()).toBeTruthy();
+    expect(response.status()).toBe(200);
   });
 });
