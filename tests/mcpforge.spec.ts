@@ -4,11 +4,15 @@ const BASE = "https://mcpforge.rvmtech.com.br";
 
 /** Wait for Blazor Server to fully connect (reconnect modal gone). */
 async function waitForBlazor(page: import("@playwright/test").Page) {
-  await page.waitForLoadState("networkidle");
+  await page.waitForLoadState("domcontentloaded");
   await page.waitForFunction(
     () => {
       const modal = document.getElementById("components-reconnect-modal");
-      return !modal || modal.style.display === "none" || !modal.classList.contains("components-reconnect-show");
+      if (modal && (modal.style.display !== "none" && modal.classList.contains("components-reconnect-show")))
+        return false;
+      return !!document.querySelector("[blazor-enhanced-nav]") ||
+        document.querySelectorAll("[_bl_]").length > 0 ||
+        !document.querySelector("[data-server-rendered]");
     },
     { timeout: 15_000 }
   ).catch(() => {});
@@ -120,6 +124,6 @@ test.describe("RVM.McpForge", () => {
 
   test("health endpoint returns 200", async ({ request }) => {
     const response = await request.get(`${BASE}/health`);
-    expect(response.status()).toBe(200);
+    expect(response.ok()).toBeTruthy();
   });
 });

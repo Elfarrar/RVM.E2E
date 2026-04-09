@@ -2,6 +2,22 @@ import { test, expect } from "@playwright/test";
 
 const BASE = "https://liveboard.rvmtech.com.br";
 
+/** Wait for Blazor Server to fully connect (reconnect modal gone). */
+async function waitForBlazor(page: import("@playwright/test").Page) {
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForFunction(
+    () => {
+      const modal = document.getElementById("components-reconnect-modal");
+      if (modal && (modal.style.display !== "none" && modal.classList.contains("components-reconnect-show")))
+        return false;
+      return !!document.querySelector("[blazor-enhanced-nav]") ||
+        document.querySelectorAll("[_bl_]").length > 0 ||
+        !document.querySelector("[data-server-rendered]");
+    },
+    { timeout: 15_000 }
+  ).catch(() => {});
+}
+
 test.describe("RVM.LiveBoard", () => {
   test("dashboard loads with layout", async ({ page }) => {
     await page.goto(BASE);
@@ -28,6 +44,7 @@ test.describe("RVM.LiveBoard", () => {
 
   test("navigate to Dashboards page", async ({ page }) => {
     await page.goto(BASE);
+    await waitForBlazor(page);
     await page.locator(".sidebar-nav").getByText("Dashboards").click();
     await expect(page).toHaveURL(/\/dashboards/);
     await expect(page.locator("h3")).toContainText("Dashboards");
@@ -35,6 +52,7 @@ test.describe("RVM.LiveBoard", () => {
 
   test("navigate to Alerts page", async ({ page }) => {
     await page.goto(BASE);
+    await waitForBlazor(page);
     await page.locator(".sidebar-nav").getByText("Alerts").click();
     await expect(page).toHaveURL(/\/alerts/);
     await expect(page.locator("h3")).toContainText("Alerts");
