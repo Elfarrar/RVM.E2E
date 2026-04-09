@@ -2,12 +2,15 @@ import { test, expect } from "@playwright/test";
 
 const BASE = "https://docforge.rvmtech.com.br";
 
-/** Wait for Blazor Server to connect (interactive mode ready). */
+/** Wait for Blazor Server to fully connect (reconnect modal gone). */
 async function waitForBlazor(page: import("@playwright/test").Page) {
   await page.waitForLoadState("networkidle");
   await page.waitForFunction(
-    () => document.querySelector("[data-server-rendered]") === null,
-    { timeout: 10_000 }
+    () => {
+      const modal = document.getElementById("components-reconnect-modal");
+      return !modal || modal.style.display === "none" || !modal.classList.contains("components-reconnect-show");
+    },
+    { timeout: 15_000 }
   ).catch(() => {});
 }
 
