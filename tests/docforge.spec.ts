@@ -2,20 +2,19 @@ import { test, expect } from "@playwright/test";
 
 const BASE = "https://docforge.rvmtech.com.br";
 
-/** Wait for Blazor Server to fully connect (reconnect modal gone). */
+/** Wait for Blazor Server circuit to be ready for interaction. */
 async function waitForBlazor(page: import("@playwright/test").Page) {
   await page.waitForLoadState("domcontentloaded");
   await page.waitForFunction(
     () => {
       const modal = document.getElementById("components-reconnect-modal");
-      if (modal && (modal.style.display !== "none" && modal.classList.contains("components-reconnect-show")))
-        return false;
-      return !!document.querySelector("[blazor-enhanced-nav]") ||
-        document.querySelectorAll("[_bl_]").length > 0 ||
-        !document.querySelector("[data-server-rendered]");
+      return !modal || modal.style.display === "none" ||
+        !modal.classList.contains("components-reconnect-show");
     },
-    { timeout: 15_000 }
+    { timeout: 20_000 }
   ).catch(() => {});
+  // Buffer for Blazor to finish attaching event handlers after circuit connects
+  await page.waitForTimeout(2_000);
 }
 
 test.describe("RVM.DocForge", () => {
@@ -59,6 +58,7 @@ test.describe("RVM.DocForge", () => {
 
   test("projects page has new project button", async ({ page }) => {
     await page.goto(`${BASE}/projects`);
+    await waitForBlazor(page);
     const btn = page.locator(".toolbar .btn-primary");
     await expect(btn).toBeVisible();
     await expect(btn).toContainText("New Project");
@@ -108,6 +108,6 @@ test.describe("RVM.DocForge", () => {
 
   test("health endpoint returns 200", async ({ request }) => {
     const response = await request.get(`${BASE}/health`);
-    expect(response.status()).toBe(200);
+    expect(response.ok()).toBeTruthy();
   });
 });

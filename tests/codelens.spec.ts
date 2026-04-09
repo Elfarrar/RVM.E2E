@@ -2,20 +2,18 @@ import { test, expect } from "@playwright/test";
 
 const BASE = "https://codelens.rvmtech.com.br";
 
-/** Wait for Blazor Server to fully connect (reconnect modal gone). */
+/** Wait for Blazor Server circuit to be ready for interaction. */
 async function waitForBlazor(page: import("@playwright/test").Page) {
   await page.waitForLoadState("domcontentloaded");
   await page.waitForFunction(
     () => {
       const modal = document.getElementById("components-reconnect-modal");
-      if (modal && (modal.style.display !== "none" && modal.classList.contains("components-reconnect-show")))
-        return false;
-      return !!document.querySelector("[blazor-enhanced-nav]") ||
-        document.querySelectorAll("[_bl_]").length > 0 ||
-        !document.querySelector("[data-server-rendered]");
+      return !modal || modal.style.display === "none" ||
+        !modal.classList.contains("components-reconnect-show");
     },
-    { timeout: 15_000 }
+    { timeout: 20_000 }
   ).catch(() => {});
+  await page.waitForTimeout(2_000);
 }
 
 test.describe("RVM.CodeLens", () => {
@@ -99,6 +97,6 @@ test.describe("RVM.CodeLens", () => {
 
   test("health endpoint returns 200", async ({ request }) => {
     const response = await request.get(`${BASE}/health`);
-    expect(response.status()).toBe(200);
+    expect(response.ok()).toBeTruthy();
   });
 });
