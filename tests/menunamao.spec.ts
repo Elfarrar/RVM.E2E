@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "https://menunamao.rvmtech.com.br";
+const BASE = "https://menunamao.portfolio.rvmtech.com.br";
 
 test.describe("RVM.MenuNaMao", () => {
   test("root redirects to /admin", async ({ page }) => {

@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "https://authforge.rvmtech.com.br";
+const BASE = "https://authforge.portfolio.rvmtech.com.br";
 
 test.describe("RVM.AuthForge", () => {
   test("root redirects to /admin", async ({ page }) => {
