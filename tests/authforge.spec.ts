@@ -2,6 +2,19 @@ import { test, expect } from "@playwright/test";
 
 const BASE = "https://authforge.portfolio.rvmtech.com.br";
 
+async function waitForBlazor(page: import("@playwright/test").Page) {
+  await page.waitForLoadState("domcontentloaded");
+  await page.waitForFunction(
+    () => {
+      const modal = document.getElementById("components-reconnect-modal");
+      return !modal || modal.style.display === "none" ||
+        !modal.classList.contains("components-reconnect-show");
+    },
+    { timeout: 20_000 }
+  ).catch(() => {});
+  await page.waitForTimeout(2_000);
+}
+
 test.describe("RVM.AuthForge", () => {
   test("root redirects to /admin", async ({ page }) => {
     await page.goto(BASE);
@@ -28,28 +41,32 @@ test.describe("RVM.AuthForge", () => {
 
   test("navigate to Users page", async ({ page }) => {
     await page.goto(`${BASE}/admin`);
+    await waitForBlazor(page);
     await page.locator(".nav-list").getByText("Users").click();
-    await expect(page).toHaveURL(/\/admin\/users/);
-    await expect(page.locator("h1")).toContainText("Users");
+    await page.waitForURL(/\/admin\/users/, { timeout: 15_000 });
+    await expect(page.locator("h1")).toContainText("Users", { timeout: 10_000 });
   });
 
   test("navigate to Roles page", async ({ page }) => {
     await page.goto(`${BASE}/admin`);
+    await waitForBlazor(page);
     await page.locator(".nav-list").getByText("Roles").click();
-    await expect(page).toHaveURL(/\/admin\/roles/);
-    await expect(page.locator("h1")).toContainText("Roles");
+    await page.waitForURL(/\/admin\/roles/, { timeout: 15_000 });
+    await expect(page.locator("h1")).toContainText("Roles", { timeout: 10_000 });
   });
 
   test("navigate to OAuth Clients page", async ({ page }) => {
     await page.goto(`${BASE}/admin`);
+    await waitForBlazor(page);
     await page.locator(".nav-list").getByText("OAuth Clients").click();
-    await expect(page).toHaveURL(/\/admin\/clients/);
+    await page.waitForURL(/\/admin\/clients/, { timeout: 15_000 });
   });
 
   test("navigate to Audit Log page", async ({ page }) => {
     await page.goto(`${BASE}/admin`);
+    await waitForBlazor(page);
     await page.locator(".nav-list").getByText("Audit Log").click();
-    await expect(page).toHaveURL(/\/admin\/audit/);
+    await page.waitForURL(/\/admin\/audit/, { timeout: 15_000 });
   });
 
   test("health endpoint returns 200", async ({ request }) => {
