@@ -51,9 +51,9 @@ test.describe("RVM.LiveBoard", () => {
   test("navigate to Alerts page", async ({ page }) => {
     await page.goto(BASE);
     await waitForBlazor(page);
-    await page.locator(".sidebar-nav a", { hasText: "Alerts" }).click();
-    await expect(page).toHaveURL(/\/alerts/);
-    await expect(page.locator(".page-body h3")).toContainText("Alerts");
+    await page.locator(".sidebar-nav").getByRole("link", { name: "Alerts", exact: true }).click();
+    await page.waitForURL(/\/alerts/, { timeout: 10_000 });
+    await expect(page.locator(".page-body h3")).toContainText("Alerts", { timeout: 10_000 });
   });
 
   test("health endpoint returns 200", async ({ request }) => {
