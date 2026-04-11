@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "https://menunamao.portfolio.rvmtech.com.br";
+const BASE = "https://menunamao.lab.rvmtech.com.br";
 
 async function waitForBlazor(page: import("@playwright/test").Page) {
   await page.waitForLoadState("domcontentloaded");

@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "https://healthguard.portfolio.rvmtech.com.br";
+const BASE = "https://healthguard.lab.rvmtech.com.br";
 
 test.describe("RVM.HealthGuard", () => {
   test("dashboard loads with layout", async ({ page }) => {

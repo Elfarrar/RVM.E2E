@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "https://logstream.portfolio.rvmtech.com.br";
+const BASE = "https://logstream.lab.rvmtech.com.br";
 
 test.describe("RVM.LogStream", () => {
   test("dashboard loads with layout", async ({ page }) => {

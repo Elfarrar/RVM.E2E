@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "https://shopengine.portfolio.rvmtech.com.br";
+const BASE = "https://shopengine.lab.rvmtech.com.br";
 
 test.describe("RVM.ShopEngine", () => {
   test("dashboard loads with layout", async ({ page }) => {

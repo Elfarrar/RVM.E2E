@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "https://codelens.portfolio.rvmtech.com.br";
+const BASE = "https://codelens.lab.rvmtech.com.br";
 
 /** Wait for Blazor Server circuit to be ready for interaction. */
 async function waitForBlazor(page: import("@playwright/test").Page) {

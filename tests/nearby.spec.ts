@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = "https://nearby.portfolio.rvmtech.com.br";
+const BASE = "https://nearby.lab.rvmtech.com.br";
 
 test.describe("RVM.NearBy", () => {
   test("dashboard loads with layout", async ({ page }) => {
