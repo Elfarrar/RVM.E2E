@@ -1,3 +1,9 @@
+> ⛔ **APOSENTADO em 27/09/2026 — repositório arquivado (somente leitura).**
+>
+> A suíte só testava o tier `*.lab.rvmtech.com.br` (portfólio), que saiu do ar em 01/09/2026 (TASK-832).
+> Nenhum workflow do ecossistema a chamava. Os E2E vivos moram em cada app (`test/playwright`, `e2e.yml`
+> via `Elfarrar/RVM.Actions`). Mantido só como histórico — não desenvolver.
+
 # RVM.E2E
 
 Suite Playwright E2E centralizada para todos os frontends do portfolio RVM Tech. Cada arquivo de spec cobre um projeto — navegacao, layout, fluxos principais e estados de erro.
